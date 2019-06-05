@@ -1,8 +1,18 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public class Converter
 {
+    public List<Activity> GetOrderedActivityListFrom(List<Activity> unorderedList)
+    {
+        List<Activity> orderedList = new List<Activity>();
+
+        orderedList = unorderedList.OrderByDescending(activity => activity.DurationInMin).ToList();
+
+        return orderedList;
+    }
+
     public List<Activity> ConvertToActivityListFrom(List<string> conferenceTalkList)
     {
         List<Activity> conferenceActivitiesList = new List<Activity>();

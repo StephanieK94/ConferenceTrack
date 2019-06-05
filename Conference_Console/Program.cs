@@ -21,7 +21,10 @@ namespace Conference_Console
             List<Activity> conferenceActivityList = new List<Activity>();
             conferenceActivityList = separator.ConvertToActivityListFrom(conferenceTalkList);
 
-            fs.FileWriter(conferenceActivityList, pathOutput);
+            List<Activity> orderList = new List<Activity>();
+            orderList = separator.GetOrderedActivityListFrom(conferenceActivityList);
+
+            fs.FileWriter(orderList, pathOutput);
         }
     }
 }

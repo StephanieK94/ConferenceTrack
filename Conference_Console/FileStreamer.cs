@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 
-class FileStreamer 
+public class FileStreamer 
 {
     public List<string> FileReader(string pathInput)
     {
