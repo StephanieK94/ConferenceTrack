@@ -16,7 +16,7 @@ class Converter
 
             string[] talkName = talk.Split(' ');
             
-            newActivity.DurationInMin = ConvertToIntFrom(talkName[talkName-1]);
+            newActivity.DurationInMin = ConvertToIntFrom(talkName[talkName.Length-1]);
 
             conferenceActivitiesList.Add(newActivity);
         }
