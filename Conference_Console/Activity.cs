@@ -1,6 +1,6 @@
 using System;
 
-class Activity
+public class Activity
 {
     public string Name {get;set;}
     public int DurationInMin {get;set;}

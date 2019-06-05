@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Conference_Console
 {
-    class Program
+    public class Program
     {
         static void Main(string[] args)
         {

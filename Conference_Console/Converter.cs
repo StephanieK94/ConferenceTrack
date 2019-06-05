@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-class Converter
+public class Converter
 {
     public List<Activity> ConvertToActivityListFrom(List<string> conferenceTalkList)
     {
