@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-class Separator
+class Converter
 {
     public List<Activity> ConvertToActivityListFrom(List<string> conferenceTalkList)
     {
@@ -15,20 +15,29 @@ class Separator
             newActivity.StartTime = new DateTime(2019,6,6,9,0,0);   // all start at 9am
 
             string[] talkName = talk.Split(' ');
-            char[] minRemove = {'m','i','n'};
-
-            if(talkName[talkName.Length-1] == "lightning".ToLower())
-            {
-                newActivity.DurationInMin = 5;
-            }
-            else
-            {
-                newActivity.DurationInMin = Convert.ToInt32(talkName[talkName.Length-1].Trim(minRemove));
-            }
+            
+            newActivity.DurationInMin = ConvertToIntFrom(talkName[talkName-1]);
 
             conferenceActivitiesList.Add(newActivity);
         }
 
         return conferenceActivitiesList;
+    }
+
+    public int ConvertToIntFrom(string lastString)
+    {
+        char[] minRemove = {'m','i','n'};
+        int duration=0;
+
+        if(lastString == "lightning".ToLower())
+        {
+            duration = 5;
+        }
+        else
+        {
+            duration = Convert.ToInt32(lastString.Trim(minRemove));
+        }
+
+        return duration;
     }
 }

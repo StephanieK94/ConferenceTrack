@@ -15,7 +15,7 @@ namespace Conference_Console
 
             List<string> conferenceTalkList = fs.FileReader(pathInput);
 
-            Separator separator = new Separator();
+            Converter separator = new Converter();
 
             var pathOutput = $"{path}\\Output.txt";
             List<Activity> conferenceActivityList = new List<Activity>();
