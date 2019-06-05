@@ -22,7 +22,7 @@ public class Converter
             Activity newActivity = new Activity();
 
             newActivity.Name = talk;
-            newActivity.StartTime = new DateTime(2019,6,6,9,0,0);   // all start at 9am
+            newActivity.Time = new DateTime(2019,6,6,9,0,0);   // all start at 9am
 
             string[] talkName = talk.Split(' ');
             
