@@ -14,6 +14,14 @@ namespace Conference_Console
             FileStreamer fs = new FileStreamer();
 
             List<string> conferenceTalkList = fs.FileReader(pathInput);
+
+            Separator separator = new Separator();
+
+            var pathOutput = $"{path}\\Output.txt";
+            List<Activity> conferenceActivityList = new List<Activity>();
+            conferenceActivityList = separator.ConvertToActivityListFrom(conferenceTalkList);
+
+            fs.FileWriter(conferenceActivityList, pathOutput);
         }
     }
 }
