@@ -3,52 +3,61 @@ using System.Collections.Generic;
 
 public class Scheduler
 {
-    public List<Activity> CreateTrackScheduleFrom(List<Activity> orderedListByDuration)
+    public List<Activity> CreateTrackScheduleFrom(List<Activity> activityList)
     {
-        List<Activity> scheduleOfTrack = new List<Activity>();
+        var scheduleOfTrack = new List<Activity>();
 
-        DateTime currentTime = new DateTime(2019,6,6,9,0,0);
-        DateTime Lunch = currentTime.AddHours(3);
-        DateTime EndOfTrack = currentTime.AddHours(8);
-
-        // add a whil(!currentTime == 5pm) ?
-        foreach(var activity in orderedListByDuration)
-        {
-            if ((DateTime.Compare(currentTime, Lunch)) < 0)
-            {
-                // see if can schedule the activity in before 12
-                if(IsAbleToBeScheduled(currentTime, activity.DurationInMin, Lunch))
-                {
-                    // add Time to the activity from currentTime,
-                    // add the activity to the list
-                    // add Time to currentTime
-                    // break
-                }
-            }
-            else if((DateTime.Compare(currentTime, Lunch)) == 0)
-            {
-                // add a new Activity of lunch? or add as an activity for track to begin with?
-                currentTime.AddHours(1);
-                continue;
-            }
-            else if(DateTime.Compare(currentTime, Lunch) > 0)
-            {
-                // see if can schedule the activity in after lunch
-                if(IsAbleToBeScheduled(currentTime, activity.DurationInMin, EndOfTrack))
-                {
-                    // add Time to the activity from currentTime,
-                    // add the activity to the list
-                    // add Time to currentTime
-                    // break
-                }
-                //else // add networking event for the currentTime
-            }
-            //else create a default or here is where will add to track2
-
-        }
-
+        var StartTime = new DateTime(2019,7,6,9,0,0);    
+        var Lunch = StartTime.AddHours(3);               
+        var EndOfTrack = StartTime.AddHours(8);   
         
+        var sumOfTalksThusFar =0;       
 
+        for(var index = 0; index < activityList.Count; index++)
+        {
+            var currentTime = StartTime.AddMinutes(sumOfTalksThusFar);
+
+            var result = DateTime.Compare(currentTime, Lunch);
+
+            if (result < 0)
+            {                
+                if(IsAbleToBeScheduled(currentTime, activityList[index].DurationInMin, Lunch))
+                {
+                    activityList[index].TimeStart = currentTime;
+                    scheduleOfTrack.Add(activityList[index]);
+                    sumOfTalksThusFar += activityList[index].DurationInMin;
+                }
+            }
+            else if(result == 0)
+            {
+                var lunch = new Activity(){
+                    Name = "Lunch",
+                    DurationInMin = 60,
+                    TimeStart = currentTime
+                };
+
+                scheduleOfTrack.Add(lunch);
+                sumOfTalksThusFar += activityList[index].DurationInMin;
+            }
+            else if(result > 0)
+            {
+                if(IsAbleToBeScheduled(currentTime, activityList[index].DurationInMin, EndOfTrack))
+                {
+                    activityList[index].TimeStart = currentTime;
+                    scheduleOfTrack.Add(activityList[index]);
+                    sumOfTalksThusFar += activityList[index].DurationInMin;
+                }
+                else
+                {
+                    var networkingEvent = new Activity();
+
+                    networkingEvent.Name = "Networking Event";
+                    networkingEvent.TimeStart = currentTime;
+
+                    sumOfTalksThusFar += activityList[index].DurationInMin;
+                }
+            }
+        }
         return scheduleOfTrack;
     }
 
@@ -60,6 +69,34 @@ public class Scheduler
         {
             return true;
         }
-        return false;
+        else return false;
     }
+
+    // public bool IsBeforeLunch(DateTime currentTime, DateTime lunchTimeLimit)
+    // {
+    //     var result = DateTime.Compare(currentTime, Lunch);
+
+    //     if (result < 0)
+    //     {
+    //         return true;
+    //     }
+    //     return false;
+    // }
+
+    // public DateTime ChangeCurrentTime(this DateTime current, int minutes)
+    // {
+    //     var hours = minutes/60;
+    //     minutes = minutes%60;
+
+    //     return new DateTime(
+    //         current.Year,
+    //         current.Month,
+    //         current.Day,
+    //         hours,
+    //         minutes,
+    //         current.Second,
+    //         current.Millisecond,
+    //         current.Kind
+    //     );
+    // }
 }

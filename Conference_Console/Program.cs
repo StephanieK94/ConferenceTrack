@@ -24,7 +24,12 @@ namespace Conference_Console
             List<Activity> orderList = new List<Activity>();
             orderList = separator.GetOrderedActivityListFrom(conferenceActivityList);
 
-            fs.FileWriter(orderList, pathOutput);
+            Track track1 = new Track();
+            Scheduler scheduler = new Scheduler();
+
+            track1.ActivityList = scheduler.CreateTrackScheduleFrom(orderList);
+
+            fs.FileWriter(track1.ActivityList, pathOutput);
         }
     }
 }
