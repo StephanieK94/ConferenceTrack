@@ -11,25 +11,27 @@ namespace Conference_Console
             var path = Directory.GetCurrentDirectory();
             var pathInput = $"{path}\\Input.txt";
 
-            FileStreamer fs = new FileStreamer();
+            var fs = new FileStreamer();
+            var conferenceTalkList = fs.FileReader(pathInput);
 
-            List<string> conferenceTalkList = fs.FileReader(pathInput);
+            var converter = new Converter();
+            var conferenceActivityList = new List<Activity>();
+            conferenceActivityList = converter.ConvertToActivityListFrom(conferenceTalkList);
 
-            Converter separator = new Converter();
+            var orderList = new List<Activity>();
+            orderList = converter.GetOrderedActivityListFrom(conferenceActivityList);
+
+            var scheduler = new Scheduler();
+            var tracksList = new List<Track>();
+            tracksList = scheduler.CreateTracksFrom(orderList);
+
+            foreach(var track in tracksList)
+            {
+                track.ActivityList = converter.GetOrderedDateTimeListFrom(track.ActivityList);
+            }
 
             var pathOutput = $"{path}\\Output.txt";
-            List<Activity> conferenceActivityList = new List<Activity>();
-            conferenceActivityList = separator.ConvertToActivityListFrom(conferenceTalkList);
-
-            List<Activity> orderList = new List<Activity>();
-            orderList = separator.GetOrderedActivityListFrom(conferenceActivityList);
-
-            Track track1 = new Track();
-            Scheduler scheduler = new Scheduler();
-
-            track1.ActivityList = scheduler.CreateTrackScheduleFrom(orderList);
-
-            fs.FileWriter(track1.ActivityList, pathOutput);
+            fs.FileWriter(tracksList, pathOutput);
         }
     }
 }

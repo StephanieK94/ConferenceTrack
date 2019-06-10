@@ -20,13 +20,16 @@ public class FileStreamer
         return input;
     }
 
-    public void FileWriter(List<Activity> conferenceList, string pathOutput)
+    public void FileWriter(List<Track> conferenceList, string pathOutput)
     {
         using(StreamWriter sw = new StreamWriter(pathOutput))
         {
-            foreach(var activity in conferenceList)
+            foreach(var track in conferenceList)
             {
-                sw.WriteLine($"{activity.Name}  {activity.DurationInMin}");
+                foreach(var activity in track.ActivityList)
+                {
+                    sw.WriteLine($"{activity.Time.ToString("hh:mmtt")}  {activity.Name}");
+                }
             }
         }
     }

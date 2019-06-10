@@ -4,6 +4,12 @@ using System.Linq;
 
 public class Converter
 {
+    public int GetDurationOfTalksFrom(List<Activity> orderedActivityList)
+    {
+        var count =0;
+        foreach(var activity in orderedActivityList) count += activity.DurationInMin;
+        return count;
+    }
     public List<Activity> GetOrderedActivityListFrom(List<Activity> unorderedList)
     {
         List<Activity> orderedList = new List<Activity>();
@@ -13,6 +19,14 @@ public class Converter
         return orderedList;
     }
 
+    public List<Activity> GetOrderedDateTimeListFrom(List<Activity> completeTrack)
+    {
+        List<Activity> orderedList = new List<Activity>();
+
+        orderedList = completeTrack.OrderBy(activity => activity.Time).ToList();
+
+        return orderedList;
+    }
     public List<Activity> ConvertToActivityListFrom(List<string> conferenceTalkList)
     {
         List<Activity> conferenceActivitiesList = new List<Activity>();

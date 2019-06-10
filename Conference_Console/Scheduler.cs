@@ -3,100 +3,92 @@ using System.Collections.Generic;
 
 public class Scheduler
 {
-    public List<Activity> CreateTrackScheduleFrom(List<Activity> activityList)
+    public List<Track> CreateTracksFrom(List<Activity> activityList)
+    {
+        var dayListOfTracks = new List<Track>();
+        var converter = new Converter();
+
+        var timeRemainging = converter.GetDurationOfTalksFrom(activityList);
+
+        while(timeRemainging > 0)
+        {
+            var newTrack = new Track();
+
+            newTrack.ActivityList = FillTrackScheduleFrom(activityList);
+
+            activityList.RemoveAll(activity => newTrack.ActivityList.Contains(activity));
+
+            var timeToRemove = converter.GetDurationOfTalksFrom(newTrack.ActivityList);
+            timeRemainging -= (timeToRemove - 60);      // minus 60 for lunch, refactor to change so each track has a lunch and a networking?
+
+            dayListOfTracks.Add(newTrack);
+        }
+
+        return dayListOfTracks;
+    }
+
+    public List<Activity> FillTrackScheduleFrom(List<Activity> activityList)
     {
         var scheduleOfTrack = new List<Activity>();
 
         var StartTime = new DateTime(2019,7,6,9,0,0);    
-        var Lunch = StartTime.AddHours(3);               
         var EndOfTrack = StartTime.AddHours(8);   
+        
+        var lunch = new Activity()
+        {
+            Name = "Lunch",
+            Time = StartTime.AddHours(3),
+            DurationInMin = 60,
+        };
         
         var sumOfTalksThusFar =0;       
 
-        for(var index = 0; index < activityList.Count; index++)
+        foreach(var activity in activityList)
         {
+            if(IsLunchTime(StartTime, lunch.Time, sumOfTalksThusFar) ==true) sumOfTalksThusFar += 60;
+            
             var currentTime = StartTime.AddMinutes(sumOfTalksThusFar);
-
-            var result = DateTime.Compare(currentTime, Lunch);
-
-            if (result < 0)
-            {                
-                if(IsAbleToBeScheduled(currentTime, activityList[index].DurationInMin, Lunch))
-                {
-                    activityList[index].TimeStart = currentTime;
-                    scheduleOfTrack.Add(activityList[index]);
-                    sumOfTalksThusFar += activityList[index].DurationInMin;
-                }
-            }
-            else if(result == 0)
+                          
+            if(IsAbleToBeScheduledBefore(lunch.Time, currentTime, activity))
             {
-                var lunch = new Activity(){
-                    Name = "Lunch",
-                    DurationInMin = 60,
-                    TimeStart = currentTime
-                };
-
-                scheduleOfTrack.Add(lunch);
-                sumOfTalksThusFar += activityList[index].DurationInMin;
+                activity.Time = currentTime;
+                scheduleOfTrack.Add(activity);
+                sumOfTalksThusFar += activity.DurationInMin;
             }
-            else if(result > 0)
+            else if(IsAbleToBeScheduledBefore(EndOfTrack, currentTime, activity))
             {
-                if(IsAbleToBeScheduled(currentTime, activityList[index].DurationInMin, EndOfTrack))
-                {
-                    activityList[index].TimeStart = currentTime;
-                    scheduleOfTrack.Add(activityList[index]);
-                    sumOfTalksThusFar += activityList[index].DurationInMin;
-                }
-                else
-                {
-                    var networkingEvent = new Activity();
-
-                    networkingEvent.Name = "Networking Event";
-                    networkingEvent.TimeStart = currentTime;
-
-                    sumOfTalksThusFar += activityList[index].DurationInMin;
-                }
+                activity.Time = currentTime;
+                scheduleOfTrack.Add(activity);
+                sumOfTalksThusFar += activity.DurationInMin;
             }
         }
+
+        scheduleOfTrack.Add(lunch);
+
+        var networking = new Activity()
+        {
+            Name = "Networking Event",
+            Time = StartTime.AddMinutes(sumOfTalksThusFar),
+        };
+        scheduleOfTrack.Add(networking);
+
         return scheduleOfTrack;
     }
 
-    public bool IsAbleToBeScheduled(DateTime currentTime, int durationOfActivity, DateTime timeLimit)
+    public bool IsAbleToBeScheduledBefore(DateTime timeLimit, DateTime currentTime, Activity activity)
     {
-        var value = DateTime.Compare(currentTime.AddMinutes(durationOfActivity), timeLimit);
+        var value = DateTime.Compare(currentTime.AddMinutes(activity.DurationInMin), timeLimit);
 
         if(value <= 0)
         {
             return true;
         }
-        else return false;
+        return false;
     }
 
-    // public bool IsBeforeLunch(DateTime currentTime, DateTime lunchTimeLimit)
-    // {
-    //     var result = DateTime.Compare(currentTime, Lunch);
-
-    //     if (result < 0)
-    //     {
-    //         return true;
-    //     }
-    //     return false;
-    // }
-
-    // public DateTime ChangeCurrentTime(this DateTime current, int minutes)
-    // {
-    //     var hours = minutes/60;
-    //     minutes = minutes%60;
-
-    //     return new DateTime(
-    //         current.Year,
-    //         current.Month,
-    //         current.Day,
-    //         hours,
-    //         minutes,
-    //         current.Second,
-    //         current.Millisecond,
-    //         current.Kind
-    //     );
-    // }
+    public bool IsLunchTime(DateTime startTime, DateTime lunchTime, int talksThusFar)
+    {
+        if(DateTime.Compare(startTime.AddMinutes(talksThusFar),lunchTime) == 0) return true;
+        return false;
+    }
 }
