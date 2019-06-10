@@ -24,16 +24,18 @@ public class FileStreamer
     {
         using(StreamWriter sw = new StreamWriter(pathOutput))
         {
-            for(var x =1; x <= conferenceList.Count; x++)
+            var x =1;
+            foreach(var track in conferenceList)
             {
                 sw.WriteLine($"Track {x}\n");
 
-                foreach(var activity in conferenceList[x].ActivityList)
+                foreach(var activity in track.ActivityList)
                 {
                     sw.WriteLine($"{activity.Time.ToString("hh:mmtt")}  {activity.Name}");
                 }
                 
                 sw.WriteLine("\n");
+                x++;
             }
         }
     }
