@@ -3,23 +3,23 @@ using System.Collections.Generic;
 
 public class Scheduler
 {
-    public List<Track> CreateTracksFrom(List<Activity> activityList)
+    public List<Track> CreateTracksListFrom(List<Activity> conferenceTalkList)
     {
         var dayListOfTracks = new List<Track>();
         var converter = new Converter();
 
-        var timeRemainging = converter.GetDurationOfTalksFrom(activityList);
+        var timeRemaining = converter.GetDurationOfTalksFrom(conferenceTalkList);
 
-        while(timeRemainging > 0)
+        while(timeRemaining > 0)
         {
             var newTrack = new Track();
 
-            newTrack.ActivityList = FillTrackScheduleFrom(activityList);
+            newTrack = FillTrackScheduleFrom(conferenceTalkList);
 
-            activityList.RemoveAll(activity => newTrack.ActivityList.Contains(activity));
+            conferenceTalkList.RemoveAll(activity => newTrack.ActivityList.Contains(activity));
 
-            var timeToRemove = converter.GetDurationOfTalksFrom(newTrack.ActivityList);
-            timeRemainging -= (timeToRemove - 60);      // minus 60 for lunch, refactor to change so each track has a lunch and a networking?
+            var timeOfTalksToRemove = converter.GetDurationOfTalksFrom(newTrack.ActivityList);
+            timeRemaining -= (timeOfTalksToRemove - 60);
 
             dayListOfTracks.Add(newTrack);
         }
@@ -27,14 +27,14 @@ public class Scheduler
         return dayListOfTracks;
     }
 
-    public List<Activity> FillTrackScheduleFrom(List<Activity> activityList)
+    public Track FillTrackScheduleFrom(List<Activity> activityList)
     {
-        var scheduleOfTrack = new List<Activity>();
+        var scheduleOfTrack = new Track();
 
         var StartTime = new DateTime(2019,7,6,9,0,0);    
         var EndOfTrack = StartTime.AddHours(8);   
         
-        var lunch = new Activity()
+        scheduleOfTrack.Lunch = new Activity()
         {
             Name = "Lunch",
             Time = StartTime.AddHours(3),
@@ -45,32 +45,29 @@ public class Scheduler
 
         foreach(var activity in activityList)
         {
-            if(IsLunchTime(StartTime, lunch.Time, sumOfTalksThusFar) ==true) sumOfTalksThusFar += 60;
+            if(IsLunchTime(StartTime, scheduleOfTrack.Lunch.Time, sumOfTalksThusFar) ==true) sumOfTalksThusFar += 60;
             
             var currentTime = StartTime.AddMinutes(sumOfTalksThusFar);
                           
-            if(IsAbleToBeScheduledBefore(lunch.Time, currentTime, activity))
+            if(IsAbleToBeScheduledBefore(scheduleOfTrack.Lunch.Time, currentTime, activity))
             {
                 activity.Time = currentTime;
-                scheduleOfTrack.Add(activity);
+                scheduleOfTrack.ActivityList.Add(activity);
                 sumOfTalksThusFar += activity.DurationInMin;
             }
             else if(IsAbleToBeScheduledBefore(EndOfTrack, currentTime, activity))
             {
                 activity.Time = currentTime;
-                scheduleOfTrack.Add(activity);
+                scheduleOfTrack.ActivityList.Add(activity);
                 sumOfTalksThusFar += activity.DurationInMin;
             }
         }
 
-        scheduleOfTrack.Add(lunch);
-
-        var networking = new Activity()
+        scheduleOfTrack.Networking = new Activity()
         {
             Name = "Networking Event",
             Time = StartTime.AddMinutes(sumOfTalksThusFar),
         };
-        scheduleOfTrack.Add(networking);
 
         return scheduleOfTrack;
     }

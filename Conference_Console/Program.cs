@@ -23,7 +23,7 @@ namespace Conference_Console
 
             var scheduler = new Scheduler();
             var tracksList = new List<Track>();
-            tracksList = scheduler.CreateTracksFrom(orderList);
+            tracksList = scheduler.CreateTracksListFrom(orderList);
 
             foreach(var track in tracksList)
             {
